@@ -1,7 +1,9 @@
 prefix ?= /usr/local
 bindir = $(prefix)/bin
 
-BINS=true
+BINS=\
+	netdb \
+	true
 
 all: $(BINS)
 
@@ -12,7 +14,11 @@ install: $(BINS)
 	done
 
 clean:
-	rm -f $(BINS)
+	rm -f $(BINS) lib.o
 
-%: %.c
-	$(CC) $(CFLAGS) $< -o $@ $(LIBS)
+%: %.c lib.o
+	$(CC) $(CFLAGS) $(CRT) lib.o $< -o $@ $(CLIBS)
+	objdump -C -M intel -D $@ > $*.list
+
+lib.o: lib.c
+	$(CC) $(CFLAGS) -c $< -o $@
